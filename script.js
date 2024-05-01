@@ -5,7 +5,7 @@ const board = document.getElementById('game-board');
 const gridSize = 20;
 let snake = [{ x: 10, y: 10 }];
 let food = generateFood();
-
+let direction = 'right';
 // Draw game map, snake, food
 function draw() {
     board.innerHTML = '';
@@ -53,5 +53,38 @@ function generateFood() {
     return{ x, y } 
 }
 
-draw();
+// Moving the snake
+
+function move() {
+    const head = {...snake[0] };
+    switch (direction) {
+        case 'up':
+            head.y--;
+            break;
+        case 'down':
+            head.y++;
+            break;
+        case 'left':
+            head.x--;
+            break;
+        case 'right':
+            head.x++;
+            break;
+    }
+
+    snake.unshift(head);
+
+    snake.pop();
+}
+
+// Essentially, the const head is copying let snake = [{ x: 10, y: 10 }]; This is because in order to get the snake head to move we do not want to alter it. So instead we are creating a seperate object that targets the starting position. Not sure why we are using ...
+
+//Test moving
+setInterval(() => {
+    move(); //Move first
+    draw(); //Then draw again new position
+}, 200);
+
+
+
 
