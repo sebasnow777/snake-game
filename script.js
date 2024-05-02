@@ -1,11 +1,17 @@
 // Define HTML elements
 const board = document.getElementById('game-board');
+const instructionText = document.getElementById('instruction-text');
+const logo = document.getElementById('logo');
 
 //Define game variables
 const gridSize = 20;
 let snake = [{ x: 10, y: 10 }];
 let food = generateFood();
 let direction = 'right';
+let gameInterval;
+let gameSpeedDelay = 200; 
+let gameStarted = false;
+
 // Draw game map, snake, food
 function draw() {
     board.innerHTML = '';
@@ -74,17 +80,69 @@ function move() {
 
     snake.unshift(head);
 
-    snake.pop();
+ //    snake.pop();
+
+    if (head.x === food.x && head.y === food.y) {
+        food = generateFood();
+        increaseSpeed();
+        clearInterval(gameInterval); // Clear past interval
+        gameInterval = setInterval(() => {
+            move();
+    //        checkCollision();
+            draw();
+        }, gameSpeedDelay);
+    } else {
+        snake.pop();
+    }
 }
 
 // Essentially, the const head is copying let snake = [{ x: 10, y: 10 }]; This is because in order to get the snake head to move we do not want to alter it. So instead we are creating a seperate object that targets the starting position. Not sure why we are using ...
 
 //Test moving
-setInterval(() => {
-    move(); //Move first
-    draw(); //Then draw again new position
-}, 200);
+//setInterval(() => {
+//    move(); //Move first
+//    draw(); //Then draw again new position
+// }, 200);
 
+// Start Game Function
 
+function startGame() {
+    gameStarted = true; //Keep track of a running game
+    instructionText.style.display = 'none';
+    logo.style.display = 'none';
+    gameInterval = setInterval(() => {
+        move();
+//        checkCollision();
+        draw();
+    }, gameSpeedDelay); 
+}
 
+// Keypress event listener
 
+function handleKeyPress(event) {
+    if ( 
+        (!gameStarted && event.code === 'Space') || 
+        (!gameStarted && event.key === ' ')
+    )  {
+        startGame();
+    } else {
+        switch (event.key) {
+            case 'ArrowUp':
+                direction = 'up';
+                break;
+            case 'ArrowDown':
+                direction = 'down';
+                break;
+            case 'ArrowLeft':
+                direction = 'left';
+                break;
+            case 'ArrowRight':
+                direction = 'right';
+                break;
+        }
+    }
+}
+
+document.addEventListener('keydown', handleKeyPress);
+
+//Above handle otherbrowsers 
